@@ -57,11 +57,35 @@ def remove_from_cart(request, slug):
 										user=request.user,
 										ordered=False
 										)[0]
+		
+			order.items.remove(order_item)
+				
+		else:
+			return redirect('core:product-detail', slug=slug)
+			pass
+	else:
+		return redirect('core:product-detail', slug=slug)
+		pass
+	return redirect('core:product-detail', slug=slug)
+
+
+def remove_single_item_from_cart(request, slug):
+	item = get_object_or_404(Item, slug=slug)
+	order_qs = Order.objects.filter(user=request.user, ordered=False)
+	if order_qs.exists():
+		order = order_qs[0]
+		# we have to check if the item exists in the order
+		if order.items.filter(item__slug=item.slug).exists():
+			order_item = OrderItem.objects.filter(
+										item=item,
+										user=request.user,
+										ordered=False
+										)[0]
 			if order_item.quantity > 1:	
 				order_item.quantity -= 1
 				order_item.save()
 			else:
-				return redirect('core:product-detail', slug=slug)
+				order.items.remove(order_item)
 				
 		else:
 			#message that the item is not in the order
@@ -70,3 +94,7 @@ def remove_from_cart(request, slug):
 		# message that the user has no active order
 		pass
 	return redirect('core:product-detail', slug=slug)
+
+
+def order_summery(request):
+	return render(request, 'core/order_summery.html')
