@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Item, OrderItem, Order
 from django.views.generic import ListView, DetailView, View
-
+from django.contrib import messages
 
 def pruducts(request):
 	context = {
@@ -36,13 +36,16 @@ def add_to_cart(request, slug):
 		if order.items.filter(item__slug=item.slug).exists():
 			order_item.quantity += 1
 			order_item.save()
+			messages.warning(request, 'One item has been added from your cart')
+			return redirect('core:order-summery')
 		else:
 			order.items.add(order_item)
+			messages.warning(request, 'One item has been added from your cart')
 	else:
 		order = Order.objects.create(user=request.user)
 		order.items.add(order_item)
-
-	return redirect('core:product-detail', slug=slug)
+		messages.warning(request, 'One item has been added from your cart')
+	return redirect('core:order-summery')
 
 
 def remove_from_cart(request, slug):
@@ -59,13 +62,12 @@ def remove_from_cart(request, slug):
 										)[0]
 		
 			order.items.remove(order_item)
-				
+			messages.warning(request, 'One item has been removed from your cart')
+			return redirect('core:order-summery')
 		else:
-			return redirect('core:product-detail', slug=slug)
-			pass
+			messages.warning(request, 'This item does not exist in your cart')			
 	else:
-		return redirect('core:product-detail', slug=slug)
-		pass
+		messages.warning(request, "You don't have an acive order")			
 	return redirect('core:product-detail', slug=slug)
 
 
@@ -84,14 +86,18 @@ def remove_single_item_from_cart(request, slug):
 			if order_item.quantity > 1:	
 				order_item.quantity -= 1
 				order_item.save()
+				messages.warning(request, 'One item has been removed from your cart')
+				return redirect('core:order-summery')
 			else:
 				order.items.remove(order_item)
+				messages.warning(request, 'One item has been removed from your cart')
+				return redirect('core:order-summery')
 				
 		else:
-			#message that the item is not in the order
+			messages.warning(request, 'This item does not exist in your cart')			
 			pass
 	else:
-		# message that the user has no active order
+		messages.warning(request, "You don't have an acive order")			
 		pass
 	return redirect('core:product-detail', slug=slug)
 

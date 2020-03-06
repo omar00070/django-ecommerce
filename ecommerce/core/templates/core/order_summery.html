@@ -24,10 +24,18 @@
 	{% else %}
       <td>${{ order_item.item.price }}</td>
   	{% endif %}
-      <td>{{ order_item.quantity }}</td>
-      <td>${{ order_item.total_price }}</td>
+      <td><span class="mr-3" ><a href="{% url 'core:remove-item-from-cart' order_item.item.slug %}">
+      	<i class="fas fa-minus"></i>
+      </a></span>{{ order_item.quantity }}
+      <span class="ml-3"><a href="{% url 'core:add-to-cart' order_item.item.slug %}">
+      	<i class="fas fa-plus"></i></a></span></td>
+      <td>${{ order_item.total_price }}
+      	<a href="{% url 'core:remove-from-cart' order_item.item.slug %}" style="color:red;"><i class="far fa-trash-alt float-right"></i></a></td>
     </tr>
+    {% empty %}
+    	<td>this cart is empty</td>
     {% endfor %}
+    {% if object.items.all %}
     <tr>
     	<td colspan="4"><b>Total Order</b></td>
     	<td><b>${{ object.total_price }}</b></td>
@@ -38,6 +46,14 @@
     	<a href="#" class="btn btn-warning float-right mr-3">Checkout Now</a>
     	</td>
     </tr>
+    {% else %}
+      <tr>
+    	<td colspan="5">
+    	<a href="/" class="btn btn-primary float-right">Continue Shopping</a>
+    </td>
+    	</tr>
+    {% endif %}
+
   </tbody>
 </table>
 </div>

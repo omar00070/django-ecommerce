@@ -111,11 +111,20 @@
     </div>
   </nav>
   <!-- Navbar -->
+  {% if messages %}
+  {% for message in messages %}
+  <div class="mt-5 pt-4 alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+  {{message}}
+  <button type="button" class="close mt-2" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  </div>
+  {% endfor %}
+  {% endif %}
 
   {%block content%}{%endblock content%}
   </main>
   <!--Main layout-->
-
   <!--Footer-->
   <footer class="page-footer text-center font-small mt-4 wow fadeIn">
 
