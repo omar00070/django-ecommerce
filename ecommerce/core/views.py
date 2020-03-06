@@ -15,7 +15,7 @@ def pruducts(request):
 class HomeView(ListView):
 	model = Item
 	template_name = 'home.html'	
-
+	paginate_by = 2
 
 
 class ProductDetail(DetailView):

@@ -81,7 +81,7 @@
           </li>
           {% if request.user.is_authenticated %}
            <li class="nav-item">
-            <a class="nav-link waves-effect" href="{% url 'core:home' %}" target="_blank">Checkout</a>  <!--need to chenge the url-->
+            <a class="nav-link waves-effect" href="{% url 'core:home' %}">Checkout</a>  <!--need to chenge the url-->
           </li>
           {% endif %}
         </ul>
@@ -122,11 +122,13 @@
   <!-- Navbar -->
   {% if messages %}
   {% for message in messages %}
-  <div class="mt-5 pt-4 alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+  <div class="mt-2 pt-3">
+  <div class="mt-5 alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
   {{message}}
-  <button type="button" class="close mt-2" data-dismiss="alert" aria-label="Close">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
     <span aria-hidden="true">&times;</span>
   </button>
+  </div>
   </div>
   {% endfor %}
   {% endif %}
