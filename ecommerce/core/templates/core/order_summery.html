@@ -8,20 +8,36 @@
   <thead>
     <tr>
       <th scope="col">#</th>
-      <th scope="col">item</th>
-      <th scope="col">price</th>
-      <th scope="col">quantity</th>
-      <th scope="col">total</th>
+      <th scope="col">Item</th>
+      <th scope="col">Price</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Total</th>
     </tr>
   </thead>
   <tbody>
+    {% for order_item in object.items.all %}
     <tr>
       <th scope="row">1</th>
-      <td>Mark</td>
-      <td>Otto</td>
-      <td>@mdo</td>
+      <td>{{ order_item.item.title }}</td>
+	{% if order_item.item.discount_price %}
+      <td>${{ order_item.item.discount_price }} (saving ${{ order_item.saving_price }})</td>
+	{% else %}
+      <td>${{ order_item.item.price }}</td>
+  	{% endif %}
+      <td>{{ order_item.quantity }}</td>
+      <td>${{ order_item.total_price }}</td>
     </tr>
-    
+    {% endfor %}
+    <tr>
+    	<td colspan="4"><b>Total Order</b></td>
+    	<td><b>${{ object.total_price }}</b></td>
+    </tr>
+    <tr>
+    	<td colspan="5">
+    	<a href="/" class="btn btn-primary float-right">Continue Shopping</a>
+    	<a href="#" class="btn btn-warning float-right mr-3">Checkout Now</a>
+    	</td>
+    </tr>
   </tbody>
 </table>
 </div>

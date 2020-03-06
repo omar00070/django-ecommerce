@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Item, OrderItem, Order
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, View
 
 
 def pruducts(request):
@@ -96,5 +96,11 @@ def remove_single_item_from_cart(request, slug):
 	return redirect('core:product-detail', slug=slug)
 
 
-def order_summery(request):
-	return render(request, 'core/order_summery.html')
+class OrderSummery(View):
+	def get(self, *args, **kwargs):
+		order = Order.objects.get(user=self.request.user, ordered=False)
+		context = {
+			'object': order
+		}
+		return render(self.request, 'core/order_summery.html', context)
+
