@@ -9,18 +9,18 @@ def pruducts(request):
 	context = {
 		"items": Item.objects.all()
 	}
-	return render(request, 'core/home-page.html', context)
+	return render(request, 'home-page.html', context)
 
 
 class HomeView(ListView):
 	model = Item
-	template_name = 'core/home.html'	
+	template_name = 'home.html'	
 
 
 
 class ProductDetail(DetailView):
 	model = Item
-	template_name = 'core/product.html'
+	template_name = 'product.html'
 
 
 @login_required
@@ -112,5 +112,5 @@ class OrderSummery(LoginRequiredMixin, View):
 		context = {
 			'object': order
 		}
-		return render(self.request, 'core/order_summery.html', context)
+		return render(self.request, 'order_summery.html', context)
 
