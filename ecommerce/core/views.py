@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Item, OrderItem, Order
 from django.views.generic import ListView, DetailView, View
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 def pruducts(request):
 	context = {
@@ -21,7 +23,7 @@ class ProductDetail(DetailView):
 	template_name = 'core/product.html'
 
 
-
+@login_required
 def add_to_cart(request, slug):
 	item = get_object_or_404(Item, slug=slug)
 	order_item, created = OrderItem.objects.get_or_create(
@@ -48,6 +50,7 @@ def add_to_cart(request, slug):
 	return redirect('core:order-summery')
 
 
+@login_required
 def remove_from_cart(request, slug):
 	item = get_object_or_404(Item, slug=slug)
 	order_qs = Order.objects.filter(user=request.user, ordered=False)
@@ -71,6 +74,7 @@ def remove_from_cart(request, slug):
 	return redirect('core:product-detail', slug=slug)
 
 
+@login_required
 def remove_single_item_from_cart(request, slug):
 	item = get_object_or_404(Item, slug=slug)
 	order_qs = Order.objects.filter(user=request.user, ordered=False)
@@ -102,7 +106,7 @@ def remove_single_item_from_cart(request, slug):
 	return redirect('core:product-detail', slug=slug)
 
 
-class OrderSummery(View):
+class OrderSummery(LoginRequiredMixin, View):
 	def get(self, *args, **kwargs):
 		order = Order.objects.get(user=self.request.user, ordered=False)
 		context = {

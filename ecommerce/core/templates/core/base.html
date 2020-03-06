@@ -1,4 +1,5 @@
 {% load static %}
+{% load cart_templatetag %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -54,7 +55,7 @@
     <div class="container">
 
       <!-- Brand -->
-      <a class="navbar-brand waves-effect" href="https://mdbootstrap.com/docs/jquery/" target="_blank">
+      <a class="navbar-brand waves-effect" href="{% url 'core:home'%}">
         <strong class="blue-text">Logo</strong>
       </a>
 
@@ -77,37 +78,44 @@
           <li class="nav-item">
             <a class="nav-link waves-effect" href="#" target="_blank">About</a>
           </li>
+          {% if request.user.is_authenticated %}
+           <li class="nav-item">
+            <a class="nav-link waves-effect" href="{% url 'core:home' %}" target="_blank">Checkout</a>  <!--need to chenge the url-->
+          </li>
+          {% endif %}
         </ul>
 
         <!-- Right -->
+        {% if request.user.is_authenticated %}
         <ul class="navbar-nav nav-flex-icons">
           <li class="nav-item">
             <a href="{% url 'core:order-summery' %}" class="nav-link waves-effect">
-              <span class="badge red z-depth-1 mr-1"> 1 </span>
+              <span class="badge red z-depth-1 mr-1"> {{request.user|cart_counter}} </span>
               <i class="fas fa-shopping-cart"></i>
               <span class="clearfix d-none d-sm-inline-block"> Cart </span>
             </a>
           </li>
           <li class="nav-item">
-            <a href="https://www.facebook.com/mdbootstrap" class="nav-link waves-effect" target="_blank">
-              <i class="fab fa-facebook-f"></i>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="https://twitter.com/MDBootstrap" class="nav-link waves-effect" target="_blank">
-              <i class="fab fa-twitter"></i>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="https://github.com/mdbootstrap/bootstrap-material-design" class="nav-link border border-light rounded waves-effect"
-              target="_blank">
-              <i class="fab fa-github mr-2"></i>MDB GitHub
+            <a href="{% url 'account_logout' %}" class="nav-link border border-light rounded">
+              <i class></i>Logout
             </a>
           </li>
         </ul>
-
+        {% else %}
+         <ul class="navbar-nav nav-flex-icons">
+          <li class="nav-item">
+            <a href="{% url 'account_signup' %}" class="nav-link waves-effect">
+              <span class="clearfix d-none d-sm-inline-block"> Register </span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'account_login' %}" class="nav-link border border-light rounded">
+              <i class></i>Login
+            </a>
+          </li>
+        </ul>
       </div>
-
+      {% endif %}
     </div>
   </nav>
   <!-- Navbar -->
@@ -132,35 +140,35 @@
 
     <!-- Social icons -->
     <div class="pb-4">
-      <a href="https://www.facebook.com/mdbootstrap" target="_blank">
+      <a href="#">
         <i class="fab fa-facebook-f mr-3"></i>
       </a>
 
-      <a href="https://twitter.com/MDBootstrap" target="_blank">
+      <a href="#">
         <i class="fab fa-twitter mr-3"></i>
       </a>
 
-      <a href="https://www.youtube.com/watch?v=7MUISDJ5ZZ4" target="_blank">
+      <a href="#">
         <i class="fab fa-youtube mr-3"></i>
       </a>
 
-      <a href="https://plus.google.com/u/0/b/107863090883699620484" target="_blank">
+      <a href="#">
         <i class="fab fa-google-plus-g mr-3"></i>
       </a>
 
-      <a href="https://dribbble.com/mdbootstrap" target="_blank">
+      <a href="#">
         <i class="fab fa-dribbble mr-3"></i>
       </a>
 
-      <a href="https://pinterest.com/mdbootstrap" target="_blank">
+      <a href="#">
         <i class="fab fa-pinterest mr-3"></i>
       </a>
 
-      <a href="https://github.com/mdbootstrap/bootstrap-material-design" target="_blank">
+      <a href="#">
         <i class="fab fa-github mr-3"></i>
       </a>
 
-      <a href="http://codepen.io/mdbootstrap/" target="_blank">
+      <a href="#">
         <i class="fab fa-codepen mr-3"></i>
       </a>
     </div>
@@ -168,8 +176,8 @@
 
     <!--Copyright-->
     <div class="footer-copyright py-3">
-      © 2019 Copyright:
-      <a href="https://mdbootstrap.com/education/bootstrap/" target="_blank"> MDBootstrap.com </a>
+      © 2019 Copyright
+      <a href="https://mdbootstrap.com/education/bootstrap/" target="_blank"> </a>
     </div>
     <!--/.Copyright-->
 
