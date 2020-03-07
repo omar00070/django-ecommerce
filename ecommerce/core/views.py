@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
-
+from .forms import CheckoutForm
 
 def pruducts(request):
 	context = {
@@ -122,5 +122,10 @@ class OrderSummery(LoginRequiredMixin, View):
 
 
 class CheckoutView(View):
+
 	def get(self, *args, **kwargs):
-		return render(self.request, 'checkout.html')	
+		form = CheckoutForm()
+		context = {
+		'form':form
+		}
+		return render(self.request, 'checkout.html', context)	

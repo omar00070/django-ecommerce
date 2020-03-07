@@ -79,3 +79,9 @@ class Order(models.Model):
 
 	def __str__(self):
 		return self.user.username
+
+
+class BillingAddress(models.Model):
+	user = models.ForeignKey(settings.AUTH_USER_MODEL, 
+							on_delete=models.CASCADE)
+	
