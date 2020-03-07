@@ -4,6 +4,8 @@ from django.views.generic import ListView, DetailView, View
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ObjectDoesNotExist
+
 
 def pruducts(request):
 	context = {
@@ -108,9 +110,17 @@ def remove_single_item_from_cart(request, slug):
 
 class OrderSummery(LoginRequiredMixin, View):
 	def get(self, *args, **kwargs):
-		order = Order.objects.get(user=self.request.user, ordered=False)
-		context = {
-			'object': order
-		}
-		return render(self.request, 'order_summery.html', context)
+		try:
+			order = Order.objects.get(user=self.request.user, ordered=False)
+			context = {
+				'object': order
+			}
+			return render(self.request, 'order_summery.html', context)
+		except ObjectDoesNotExist:
+			message.error(self.request, "You dont have an active order")
+			return redirect('/')
 
+
+class CheckoutView(View):
+	def get(self, *args, **kwargs):
+		return render(self.request, 'checkout.html')	
