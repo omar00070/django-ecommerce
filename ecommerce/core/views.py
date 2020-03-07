@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Item, OrderItem, Order
+from .models import Item, OrderItem, Order, BillingAddress
 from django.views.generic import ListView, DetailView, View
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -117,15 +117,45 @@ class OrderSummery(LoginRequiredMixin, View):
 			}
 			return render(self.request, 'order_summery.html', context)
 		except ObjectDoesNotExist:
-			message.error(self.request, "You dont have an active order")
+			messages.error(self.request, "You dont have an active order")
 			return redirect('/')
 
 
 class CheckoutView(View):
-
 	def get(self, *args, **kwargs):
 		form = CheckoutForm()
 		context = {
 		'form':form
 		}
-		return render(self.request, 'checkout.html', context)	
+		return render(self.request, 'checkout.html', context)
+	
+	def post(self, *args, **kwargs):
+		form = CheckoutForm(self.request.POST or None)
+		
+		try:
+			order = Order.objects.get(user=self.request.user, ordered=False)
+			if form.is_valid():
+				address = form.cleaned_data.get("address")
+				appartment_address = form.cleaned_data.get("appartment_address")
+				country = form.cleaned_data.get("country")
+				zip = form.cleaned_data.get("zip")
+				# same_shipping_address = form.cleaned_data.get("same_shipping_address")
+				# save_info = form.cleaned_data.get("save_info")
+				payment_options = form.cleaned_data.get("payment_options")
+				billing_address= BillingAddress(
+				user=self.request.user,
+				address=address,
+				appartment_address=appartment_address,
+				country=country,
+				zip=zip	
+				)
+				billing_address.save()
+				order.billing_address=billing_address
+				order.save(	)
+				return redirect('core:checkout')
+			messages.warning(self.request, 'the form is invalid')		
+			return redirect('core:checkout')
+		
+		except ObjectDoesNotExist:
+			messages.error(self.request, "You dont have an active order")
+			return redirect('/')

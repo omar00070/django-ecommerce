@@ -15,8 +15,11 @@
           <!--Card-->
           <div class="card">
           <!--Card content-->
-            <form class="card-body" type="post">
+            <form class="card-body" method="POST">
               {% csrf_token %}
+              <!-- <form method="POST">
+              {{form|crispy}}
+              </form> -->
                 <div class="md-form mb-5">
 <!--                 <input type="text" id="address" class="form-control" placeholder="1234 Main St">
  -->             {{form.address}}
@@ -81,7 +84,7 @@
               <div class="d-block my-3">
                 {% for value, name in form.fields.payment_options.choices %}
                  <div class="custom-control custom-radio">
-                  <input id="{{name}}" name="paymentMethod" type="radio" class="custom-control-input" required>
+                  <input id="{{name}}" name="payment_options" type="radio" class="custom-control-input" value="{{value}}"required>
                   <label class="custom-control-label" for="{{name}}">{{name}}</label>
                 </div>
                 {% endfor %}

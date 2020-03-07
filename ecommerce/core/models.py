@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.shortcuts import reverse
+from django_countries.fields import CountryField
 
 
 CATEGORY_CHOICE = (
@@ -69,7 +70,7 @@ class Order(models.Model):
 							on_delete=models.CASCADE)
 	items = models.ManyToManyField(OrderItem)
 	ordered = models.BooleanField(default=False)
-
+	billing_address = models.ForeignKey('BillingAddress', on_delete=models.SET_NULL, null=True, blank=True)
 	def total_price(self):
 		total = 0
 		for item in self.items.all():
@@ -84,4 +85,10 @@ class Order(models.Model):
 class BillingAddress(models.Model):
 	user = models.ForeignKey(settings.AUTH_USER_MODEL, 
 							on_delete=models.CASCADE)
+	address	= models.CharField(max_length=100)
+	appartment_address = models.CharField(max_length=100)
+	country	= CountryField(multiple=False)
+	zip = models.CharField(max_length=100)
 	
+	def __str__(self):
+		return self.user.username
