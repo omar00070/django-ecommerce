@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Item, OrderItem, Order, BillingAddress
+from .models import Item, OrderItem, Order, BillingAddress, Payment
 from django.views.generic import ListView, DetailView, View
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -7,6 +7,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from .forms import CheckoutForm
 import stripe
+
+
+
+stripe.api_key = 'sk_test_aSj98HSHT0wlaws78eFrmSEk00qMJtF1LI'
 
 
 
@@ -76,7 +80,7 @@ def remove_from_cart(request, slug):
 			messages.warning(request, 'This item does not exist in your cart')			
 	else:
 		messages.warning(request, "You don't have an acive order")			
-	return redirect('core:product-detail', slug=slug)
+	return checkoutt('core:product-detail', slug=slug)
 
 
 @login_required
@@ -166,15 +170,61 @@ class CheckoutView(View):
 
 class PaymentView(View):
 	def get(self, *args, **kwargs):
-		return render(self.request, 'payment.html')
+		order = Order.objects.get(user=self.request.user, ordered=False)
+		context = {
+			'object': order
+		}
+		return render(self.request, 'payment.html', context)
 
 	def post(self, *args, **kwargs):
-		stripe.api_key = 'sk_test_4eC39HqLyjWDarjtT1zdp7dc'
 		order = Order.objects.get(user=self.request.user, ordered=False)
-		intent = stripe.PaymentIntent.create(
-		  amount=order.total_price() * 100,
-		  currency='usd',
-		  # Verify your integration in this guide by including this parameter
-		  metadata={'integration_check': 'accept_a_payment'},
-		)
-		pass
+		amount = int(order.total_price() * 100)
+		token = self.request.POST.get('stripeToken')
+		try:
+			charge = stripe.Charge.create(
+			  amount=amount,
+			  currency="usd",
+	  		  source=token
+			)
+
+			# create the payment
+			payment = Payment()
+			payment.stripe_charge_id = charge['id']
+			payment.user = self.request.user
+			payment.ammount = amount
+			payment.save()
+
+			#assign the payment to the order
+			order.ordered = True
+			order.payment = payment
+			order.save()
+			messages.success(self.request, "The payment was successful")
+			return redirect(self.request, "/")
+		
+		except stripe.error.CardError as e:
+			messages.error(self.request, 'CardErorr')
+			return redirect(self.request, '/')
+
+		except stripe.error.RateLimitError as e:
+			messages.error(self.request, 'CardErorr')
+			return redirect(self.request, '/')
+
+		except stripe.error.InvalidRequestError as e:
+			messages.error(self.request, 'CardErorr')
+			return redirect(self.request, '/')
+
+		except stripe.error.AuthenticationError as e:
+			messages.error(self.request, 'CardErorr')
+			return redirect(self.request, '/')
+
+		except stripe.error.APIConnectionError as e:
+			messages.error(self.request, 'Netword Error')
+			return redirect(self.request, '/')
+
+		except stripe.error.StripeError as e:
+			messages.error(self.request, 'Stripe Error')
+			return redirect(self.request, '/')
+
+		except Exception as e:
+			messages.error(self.request, 'a very serious error has occured, we have been notified')
+			return redirect(self.request, '/')

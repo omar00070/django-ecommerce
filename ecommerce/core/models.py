@@ -71,6 +71,9 @@ class Order(models.Model):
 	items = models.ManyToManyField(OrderItem)
 	ordered = models.BooleanField(default=False)
 	billing_address = models.ForeignKey('BillingAddress', on_delete=models.SET_NULL, null=True, blank=True)
+	payment = models.ForeignKey('Payment', on_delete=models.SET_NULL, null=True, blank=True)
+	
+
 	def total_price(self):
 		total = 0
 		for item in self.items.all():
@@ -93,3 +96,10 @@ class BillingAddress(models.Model):
 	def __str__(self):
 		return self.user.username
 
+class Payment(models.Model):
+	stripe_charge_id = models.CharField(max_length=50)
+	amount = models.FloatField()
+	user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True)
+
+	def __str__(self):
+		return f'{self.user.username} order' 

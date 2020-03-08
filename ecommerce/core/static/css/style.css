@@ -13,11 +13,9 @@ body,
     .carousel .carousel-inner .active {
       height: 100%; }
 
-/* Adjustment for mobile devices*/
-@media (max-width: 776px) {
-  .carousel {
-    height: 100%; } }
 
-/* Footer color for sake of consistency with Navbar */
-.page-footer {
-  background-color: #929FBA; }
+  /* Adjustment for mobile devices*/
+  @media (max-width: 776px) {
+    .carousel {
+      height: 100%; } }
+
