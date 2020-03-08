@@ -1,7 +1,8 @@
 from django.urls import path
 from .views import (HomeView, ProductDetail, 
 add_to_cart, remove_from_cart, OrderSummery,
-remove_single_item_from_cart, CheckoutView
+remove_single_item_from_cart, CheckoutView,
+PaymentView
 )
 
 
@@ -15,4 +16,5 @@ path('remove-from-cart/<slug>/', remove_from_cart, name='remove-from-cart'),
 path('remove-item-from-cart/<slug>/', remove_single_item_from_cart, name='remove-item-from-cart'),
 path('order-summery/', OrderSummery.as_view(), name='order-summery'),
 path('checkout/', CheckoutView.as_view(), name='checkout'),
+path('payment/<payment_option>', PaymentView.as_view(), name='payment'),
 ]

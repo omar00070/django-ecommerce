@@ -6,6 +6,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from .forms import CheckoutForm
+import stripe
+
+
 
 def pruducts(request):
 	context = {
@@ -159,3 +162,19 @@ class CheckoutView(View):
 		except ObjectDoesNotExist:
 			messages.error(self.request, "You dont have an active order")
 			return redirect('/')
+
+
+class PaymentView(View):
+	def get(self, *args, **kwargs):
+		return render(self.request, 'payment.html')
+
+	def post(self, *args, **kwargs):
+		stripe.api_key = 'sk_test_4eC39HqLyjWDarjtT1zdp7dc'
+		order = Order.objects.get(user=self.request.user, ordered=False)
+		intent = stripe.PaymentIntent.create(
+		  amount=order.total_price() * 100,
+		  currency='usd',
+		  # Verify your integration in this guide by including this parameter
+		  metadata={'integration_check': 'accept_a_payment'},
+		)
+		pass
