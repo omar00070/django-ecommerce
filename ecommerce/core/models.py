@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.shortcuts import reverse
 from django_countries.fields import CountryField
-
+from PIL import Image
 
 CATEGORY_CHOICE = (
 	('S', 'Shirt'),
@@ -25,8 +25,13 @@ class Item(models.Model):
 	discount_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 	category = models.CharField(choices=CATEGORY_CHOICE, max_length=2)
 	label = models.CharField(choices=LABEL_CHOICE, max_length=2)
+	thumbnail = models.ImageField(upload_to='products-images', blank=True, null=True)
+	img_1 = models.ImageField(upload_to='products-images', blank=True, null=True)
+	img_2 = models.ImageField(upload_to='products-images', blank=True, null=True)
+	img_3 = models.ImageField(upload_to='products-images', blank=True, null=True)
+	additional_info = models.TextField(blank=True, null=True)
 	slug = models.SlugField(max_length=100)
-
+	banner = models.ImageField(upload_to="banner_images", blank=True, null=True)
 	def __str__(self):
 		return self.title
 
@@ -43,6 +48,14 @@ class Item(models.Model):
 		return reverse('core:remove-from-cart', kwargs={
 			'slug':self.slug
 			})
+
+	def save(self, *args, **kwargs):
+	 # override the save method to reduce the size of the image  
+		super().save(*args, **kwargs)
+		img_thumbnail = Image.open(self.thumbnail.path)
+		output_size = (309, 550)
+		img_thumbnail.thumbnail(output_size)
+		img_thumbnail.save(self.thumbnail.path)
 
 
 
@@ -104,3 +117,6 @@ class Payment(models.Model):
 
 	def __str__(self):
 		return f'{self.user.username} Payment'
+
+class Banner(models.Model):
+	image = models.ImageField(upload_to='banner_images', blank=True, null=True)

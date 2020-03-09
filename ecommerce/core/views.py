@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Item, OrderItem, Order, BillingAddress, Payment
+from .models import Item, OrderItem, Order, BillingAddress, Payment, Banner
 from django.views.generic import ListView, DetailView, View
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -11,13 +11,6 @@ import stripe
 
 stripe.api_key = 'sk_test_4eC39HqLyjWDarjtT1zdp7dc'
 
-
-
-def pruducts(request):
-	context = {
-		"items": Item.objects.all()
-	}
-	return render(request, 'home-page.html', context)
 
 
 class HomeView(ListView):
@@ -123,7 +116,7 @@ class OrderSummery(LoginRequiredMixin, View):
 			}
 			return render(self.request, 'order_summery.html', context)
 		except ObjectDoesNotExist:
-			messages.error(self.request, "You dont have an active order")
+			messages.warning(self.request, "You dont have an active order")
 			return redirect('/')
 
 
@@ -157,18 +150,25 @@ class CheckoutView(View):
 				billing_address.save()
 				order.billing_address=billing_address
 				order.save(	)
-				return redirect('core:checkout')
+
+				return redirect('core:payment', payment_options=payment_options.lower())
+			
 			messages.warning(self.request, 'the form is invalid')		
 			return redirect('core:checkout')
 		
 		except ObjectDoesNotExist:
-			messages.error(self.request, "You dont have an active order")
+			messages.warning(self.request, "You dont have an active order")
 			return redirect('/')
 
 
 class PaymentView(View):
 	def get(self, *args, **kwargs):
-		order = Order.objects.get(user=self.request.user, ordered=False)
+		try:
+			order = Order.objects.get(user=self.request.user, ordered=False)
+		except ObjectDoesNotExist:
+			messages.warning(self.request, "You dont have an active order")
+			return redirect('/')
+
 		context = {
 			'object': order
 		}
@@ -201,29 +201,29 @@ class PaymentView(View):
 			return redirect("/")
 		
 		except stripe.error.CardError as e:
-			messages.error(self.request, 'CardErorr')
+			messages.warning(self.request, 'CardErorr')
 			return redirect('/')
 
 		except stripe.error.RateLimitError as e:
-			messages.error(self.request, 'RateLimitError')
+			messages.warning(self.request, 'RateLimitError')
 			return redirect('/')
 
 		except stripe.error.InvalidRequestError as e:
-			messages.error(self.request, 'InvalidRequestError')
+			messages.warning(self.request, 'InvalidRequestError')
 			return redirect('/')
 
 		except stripe.error.AuthenticationError as e:
-			messages.error(self.request, 'AuthenticationError')
+			messages.warning(self.request, 'AuthenticationError')
 			return redirect('/')
 
 		except stripe.error.APIConnectionError as e:
-			messages.error(self.request, 'Netword Error')
+			messages.warning(self.request, 'Netword Error')
 			return redirect('/')
 
 		except stripe.error.StripeError as e:
-			messages.error(self.request, 'Stripe Error')
+			messages.warning(self.request, 'Stripe Error')
 			return redirect('/')
 
 		except Exception as e:
-			messages.error(self.request, 'a very serious error has occured, we have been notified')
+			messages.warning(self.request, 'a very serious error has occured, we have been notified')
 			return redirect('/')

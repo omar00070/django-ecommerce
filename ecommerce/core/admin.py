@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import Item, OrderItem, Order, BillingAddress, Payment
+from .models import (Item, OrderItem, Order, 
+	BillingAddress, Payment
+	)
 
 
 admin.site.register(Item)

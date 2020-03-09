@@ -18,8 +18,7 @@
 
       <!--First slide-->
       <div class="carousel-item active">
-        <div class="view" style="background-image: url('https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/8-col/img%282%29.jpg'); background-repeat: no-repeat; background-size: cover;">
-
+        <div class="view" style="background-image: url('{{object_list.objects.thumbnail.url}}'); background-repeat: no-repeat; background-size: cover;">
           <!-- Mask & flexbox options-->
           <div class="mask rgba-black-strong d-flex justify-content-center align-items-center">
 
@@ -209,9 +208,9 @@
 
               <!--Card image-->
               <div class="view overlay">
-                <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/12.jpg" class="card-img-top"
-                  alt="">
-                <a>
+                <img src="media/{{item.thumbnail}}" class="card-img-top"
+                  alt="" height="373px">
+                <a href="{{item.get_absolute_url}}">
                   <div class="mask rgba-white-slight"></div>
                 </a>
               </div>
@@ -226,7 +225,7 @@
                 <h5>
                   <strong>
                     <a href="{{item.get_absolute_url}}" class="dark-grey-text">{{item.title}}
-                      <span class="badge badge-pill {{item.get_label_display}}-color">NEW</span>
+                      <span class="badge badge-pill {{item.get_label_display}}-color">New</span>
                     </a>
                   </strong>
                 </h5>
