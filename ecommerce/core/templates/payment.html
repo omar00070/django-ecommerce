@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
-{% block extra_head %}
 {% load cart_templatetag %}
+
+{% block extra_head %}
 
 <style media="screen">
 #stripBtnLabel {
@@ -172,6 +173,9 @@ label {
 </div>      
 </main>
 
+{% endblock content %}
+
+{% block extra_script %}
 <script type="text/javascript" nonce="">  // Create a Stripe client.
   var stripe = Stripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
 
@@ -244,9 +248,5 @@ label {
   }
 
 
-
 </script>
-
-{% endblock content %}
-
-
+{% endblock extra_script %}
